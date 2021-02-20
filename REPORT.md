@@ -16,19 +16,6 @@ The RBAC (role-based access control) model needs to support improved delegation 
 
 The aim of the project is to design and implement a system for implied roles within Kubernetes. Consequently, the following are the personas of the project.
 
-### Design and Implementation
-The following are the personas responsible for design and implementation of the **Implied Roles** feature within Kubernetes.
-#### Mentor
-- Adam Young
-#### Team
-- Anand Hegde
-- Neeharika Kompala
-- Rahul Pandey
-- Rongyi Chen
-- Yuting Zhang
-
-### End Users
-
 The feature in its completed state will be provided as a Kubernetes operator that will be published on [OperatorHub.io](https://operatorhub.io/).
 
 As a result, the end users are expected to be users 
