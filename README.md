@@ -95,8 +95,6 @@ Discussions and decisions taken, why?
 
 - Users are assigned to roles within a namespace to perform operations. The role relationships should be implemented. 
 - Both explicitly assigned and implied roles will be included when roles assigned to a given user. If a user was explicitly assigned a role on a namespace, the validation of a token for that user and scoped to the namespace would have the roles. 
-- SQL backend should be implemented. Other backends will follow if requested.
-
 ---
 
 ## 6.  Release Planning:
