@@ -57,6 +57,5 @@ func (r *ImpliedRolesReconciler) Reconcile(ctx context.Context, req ctrl.Request
 func (r *ImpliedRolesReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&rolev1alpha1.ImpliedRoles{}).
-		Owns(&appsv1.{}).
 		Complete(r)
 }
