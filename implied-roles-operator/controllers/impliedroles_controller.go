@@ -48,7 +48,7 @@ type ImpliedRolesReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.7.0/pkg/reconcile
 func (r *ImpliedRolesReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	log = r.Log.WithValues("impliedroles", req.NamespacedName)
+	_ = r.Log.WithValues("impliedroles", req.NamespacedName)
 
 	return ctrl.Result{}, nil
 }
