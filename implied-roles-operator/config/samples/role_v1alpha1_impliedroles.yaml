@@ -1,0 +1,7 @@
+apiVersion: role.k8s.com/v1alpha1
+kind: ImpliedRoles
+metadata:
+  name: impliedroles-sample
+spec:
+  # Add fields here
+  foo: bar
