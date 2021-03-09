@@ -4,4 +4,7 @@ metadata:
   name: impliedroles-sample
 spec:
   # Add fields here
-  foo: bar
+  implications:
+    admin:
+      - developer
+      - storedata
