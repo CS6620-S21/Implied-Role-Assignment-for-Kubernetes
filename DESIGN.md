@@ -6,8 +6,8 @@
 
 **Trigger:**
 
-- Role-binding is created. -> Role assignment (Through role binding yaml) - Kubectl apply (Only to current User)
-- Role-binding is updated. -> Role assignment (Through role binding yaml) - Kubectl apply (Only to current User)
+- Role-binding is created. &#8594; Role assignment (Through role binding yaml) - Kubectl apply (Only to current User)
+- Role-binding is updated. &#8594; Role assignment (Through role binding yaml) - Kubectl apply (Only to current User)
 - Role un assignment using yaml, deleted role binding - Need to look how - kubectl delete (Only to current User)
 - Create the CRD that implies the implied role. - Create implied roles and create role bindings (Across all users)
 - Update the CRD that implies the implied role. - Update implied roles and create role bindings (Across all users)
