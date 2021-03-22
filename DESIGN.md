@@ -6,13 +6,20 @@
 
 **Trigger:**
 
-- Role-binding is created. &#8594; Role assignment (Through role binding yaml) - Kubectl apply (Only to current User)
-- Role-binding is updated. &#8594; Role assignment (Through role binding yaml) - Kubectl apply (Only to current User)
-- Role un assignment using yaml, deleted role binding - Need to look how - kubectl delete (Only to current User)
-- Create the CRD that implies the implied role. - Create implied roles and create role bindings (Across all users)
-- Update the CRD that implies the implied role. - Update implied roles and create role bindings (Across all users)
-- Delete the CRD that implies the implied role. - Delete all implied roles and implied role bindings (Across all users)
-- If you delete the role, it needs to be deleted from role binding and CRD - NOT IN SCOPE (Look into this if kubernetes automatically handles this)
+- Role-binding is created. &#8594; Role assignment (Through role binding yaml)\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kubectl apply (Only to current User)
+- Role-binding is updated. &#8594; Role assignment (Through role binding yaml)\ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kubectl apply (Only to current User)
+- Role un assignment using yaml, deleted role binding - Need to look how
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kubectl delete (Only to current User)
+- Create the CRD that implies the implied role.\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create implied roles and create role bindings (Across all users)
+- Update the CRD that implies the implied role.\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Update implied roles and create role bindings (Across all users)
+- Delete the CRD that implies the implied role.\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Delete all implied roles and implied role bindings (Across all users)
+- If you delete the role, it needs to be deleted from role binding and CRD 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NOT IN SCOPE (Look into this if kubernetes automatically handles this)
 
 **Logic:**
 
@@ -108,19 +115,19 @@ type ImpliedRolesSpec struct {
 
 ## 4. Example
 
-Inferences: 
-admin -> developer
-admin -> reviewer
-developer -> writer
-writer -> pro
-writer -> noob
+Inferences: \
+admin -> developer\
+admin -> reviewer\
+developer -> writer\
+writer -> pro\
+writer -> noob\
 
 
 *What the operator does in updating the status* -
 
-RuleInferences:
-admin -> [ developer, reviewer, writer, pro, noob ]
-developer -> [ writer, pro, noob ]
-writer -> [ pro, noob ]
+RuleInferences:\
+admin -> [ developer, reviewer, writer, pro, noob ]\
+developer -> [ writer, pro, noob ]\
+writer -> [ pro, noob ]\
 
 ---
