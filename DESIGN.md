@@ -16,46 +16,46 @@
 
 **Logic:**
 
-- Role-binding is created &#8594;
-        1. We get the user from the context and the role assigned. 
-        2. We check if the role is an implied role.
-            if yes,
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles for this role.
+- Role-binding is created &#8594;\
+        1. We get the user from the context and the role assigned.\ 
+        2. We check if the role is an implied role.\
+            if yes,\
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles for this role.\
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We assign these roles to the user via creating role bindings. (Also making sure we maintain labels for implied role)
 
-- Role-binding is updated. &#8594;
-        1. We get the user from the context and the role assigned. 
-        2. We check if the role is an implied role.
-            if yes, 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles for this role.
+- Role-binding is updated. &#8594;\
+        1. We get the user from the context and the role assigned. \
+        2. We check if the role is an implied role.\
+            if yes, \
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles for this role.\
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We assign these roles to the user via creating role bindings. (Also making sure we maintain labels for implied role)
 
-- Role-binding is deleted. &#8594;
-        1. We get the user from the context and the role assigned. 
-        2. We check if the role is an implied role.
-            if yes, 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles for this role.
+- Role-binding is deleted. &#8594;\
+        1. We get the user from the context and the role assigned. \
+        2. We check if the role is an implied role.\
+            if yes, \
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles for this role.\
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We un-assign these roles to the user via deleting role bindings. (Also making sure we delete only those implied by this role and maintaining labels)
 
-- Create the CRD that implies the implied role. &#8594; 
-        1. For all users.
-        2. We check if there exists an implied role  role binding for created CRD.
-            if yes, 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles from this role.
+- Create the CRD that implies the implied role. &#8594; \
+        1. For all users.\
+        2. We check if there exists an implied role  role binding for created CRD.\
+            if yes, \
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles from this role.\
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We assign these roles to the user via creating role bindings. (Also making sure we maintain labels for implied role)
 
-- Update the CRD that implies the implied role. &#8594;
-        1. For all users.
-        2. We check if there exists an implied role  role binding for created CRD. 
-            if yes, 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles from this role.
+- Update the CRD that implies the implied role. &#8594;\
+        1. For all users.\
+        2. We check if there exists an implied role  role binding for created CRD. \
+            if yes, \
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles from this role.\
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We check what has changed since last and assign/unassign all those roles to the user via deleting/Creating role bindings. (Also making sure we maintain labels for implied role)
     
-- Delete the CRD that implies the implied role. &#8594;
-        1. For all users.
-        2. We check if there exists an implied role  role binding for deleted CRD.
-            if yes, 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles from this role.
+- Delete the CRD that implies the implied role. &#8594;\
+        1. For all users.\
+        2. We check if there exists an implied role  role binding for deleted CRD.\
+            if yes, \
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles from this role.\
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We un-assign these roles to the user via creating role bindings. (Also making sure we maintain labels for implied role)
 
 ---
