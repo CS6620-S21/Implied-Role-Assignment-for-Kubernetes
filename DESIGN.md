@@ -62,11 +62,11 @@ spec:
 
 **Trigger:**
 
-- Role-binding is created. &#8594; Role assignment (Through role binding yaml)\
+- Role-binding is created. &#8594; Role assignment (Through role binding yaml) \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kubectl apply (Only to current User)
 - Role-binding is updated. &#8594; Role assignment (Through role binding yaml)\ 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kubectl apply (Only to current User)
-- Role un assignment using yaml, deleted role binding - Need to look how
+- Role un assignment using yaml, deleted role binding - Need to look how\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kubectl delete (Only to current User)
 - Create the CRD that implies the implied role.\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create implied roles and create role bindings (Across all users)
@@ -74,13 +74,13 @@ spec:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Update implied roles and create role bindings (Across all users)
 - Delete the CRD that implies the implied role.\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Delete all implied roles and implied role bindings (Across all users)
-- If you delete the role, it needs to be deleted from role binding and CRD 
+- If you delete the role, it needs to be deleted from role binding and CRD \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NOT IN SCOPE (Look into this if kubernetes automatically handles this)
 
 **Logic:**
 
 - Role-binding is created &#8594;\
-        1. We get the user from the context and the role assigned.\ 
+        1. We get the user from the context and the role assigned. \
         2. We check if the role is an implied role.\
             if yes,\
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles for this role.\
@@ -134,21 +134,21 @@ admin -> developer\
 admin -> reviewer\
 developer -> writer\
 writer -> pro\
-writer -> noob\
+writer -> noob
 
 RuleInferences:\
 admin -> [ developer, reviewer, writer, pro, noob ]\
 developer -> [ writer, pro, noob ]\
-writer -> [ pro, noob ]\
+writer -> [ pro, noob ]
 
 
 *Deleting role inferences* 
 
-Infernece: 
-developer -> writer\
+Inferences: 
+developer -> writer
 
 RuleInferences:\
 admin -> [ developer, reviewer]\
-writer -> [ pro, noob ]\
+writer -> [ pro, noob ]
 
 ---
