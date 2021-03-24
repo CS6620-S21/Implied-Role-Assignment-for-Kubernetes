@@ -18,8 +18,10 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-logr/logr"
+	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -48,7 +50,43 @@ type ImpliedRolesReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.7.0/pkg/reconcile
 func (r *ImpliedRolesReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = r.Log.WithValues("impliedroles", req.NamespacedName)
+	logger := r.Log.WithValues("impliedroles", req.NamespacedName)
+
+	// Get all role bindings
+	roleBindings := &rbacv1.RoleBindingList{}
+	opts := []client.ListOption{
+		client.InNamespace(req.NamespacedName.Namespace),
+	}
+
+	if err := r.List(ctx, roleBindings, opts...); err != nil {
+		logger.Error(err, "Error getting RoleBindings")
+		return ctrl.Result{}, err
+	}
+
+	// Parse rolebindings
+	userRoles := make(map[rbacv1.Subject][]rbacv1.RoleRef)
+	for _, role_binding := range roleBindings.Items {
+		for _, subject := range role_binding.Subjects {
+			userRoles[subject] = append(userRoles[subject], role_binding.RoleRef)
+		}
+	}
+
+	logger.Info(fmt.Sprintf("%v", userRoles))
+
+	// Get all implied roles
+	impliedRoles := &rolev1alpha1.ImpliedRolesList{}
+	opts = []client.ListOption{
+		client.InNamespace(req.NamespacedName.Namespace),
+	}
+
+	if err := r.List(ctx, impliedRoles, opts...); err != nil {
+		logger.Error(err, "Error getting ImpliedRoles")
+		return ctrl.Result{}, err
+	}
+
+	for _, implied_role := range impliedRoles.Items {
+		logger.Info(fmt.Sprintf("Name: %s \t Namespace: %s \t Data: %s", implied_role.Name, implied_role.Namespace, implied_role.Spec))
+	}
 
 	return ctrl.Result{}, nil
 }
