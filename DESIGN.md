@@ -10,7 +10,7 @@ The operator is built as a combination of a **CRD** (Custom Resource Definition)
 
 A **Custom Resource** (CR) contains a **Spec** and a **Status**. The **Spec** is effectively the schema for the desired state of implied roles in a cluster. The **Status** is a schema for the current state of implied roles in a cluster.
 
-Each _implication_ (parent role implied child role) is a CR in the cluster.
+Each _implication_ (parent role implies child role) is a CR in the cluster.
 
 ### Spec
 
@@ -18,8 +18,8 @@ The spec is defined below. An implied roles CR contains a one to one mapping of 
 
 ```golang
 type Rule struct {
-	   ParentRole   string      `json:"parent_role,omitempty"`
-	   ChildRole    string      `json:"child_role,omitempty"`
+    ParentRole      string      `json:"parent_role,omitempty"`
+    ChildRole       string      `json:"child_role,omitempty"`
 }
 
 type ImpliedRolesSpec struct {	
@@ -29,12 +29,12 @@ type ImpliedRolesSpec struct {
 
 ### Status
 
-The status is defined below. The `Inferences` contain a one-to-many mapping of `ParentRole` to multiple `ChildRoles`. The `ChildRoles` are all roles that a `ParentRole` would imply i.e. all roles that are descendants of `ParentRole` if one were to imagine all implies role rules as a tree. 
+The status is defined below. The `Inferences` contain a one-to-many mapping of `ParentRole` to multiple `ChildRoles`. The `ChildRoles` are all roles that a `ParentRole` would imply i.e. all roles that are descendants of `ParentRole` if one were to imagine all implication rules as a tree. 
 
 ```golang
 type RuleInferences struct {
-    ParentRole  string	        `json:"parent_role,omitempty"`
-    ChildRoles  []string	    `json:"child_roles,omitempty"`
+    ParentRole  string          `json:"parent_role,omitempty"`
+    ChildRoles  []string        `json:"child_roles,omitempty"`
 }
 
 type ImpliedRolesStatus struct {
@@ -49,11 +49,11 @@ This is an example of a implied roles CR defined in a `yaml`.
 ```yaml
 kind: ImpliedRoles
 metadata:
-  name: impliedroles-sample
+    name: impliedroles-sample
 spec:
-   inference_rule:
-	    parent_role: admin
-	    child_role: writer
+    inference_rule:
+        parent_role: admin
+        child_role: writer
 ```
 
 ## Controller
