@@ -51,7 +51,7 @@ If a user is assigned *all_admin* in a namespace and requests access for that na
 
 The role relationships are illustrated in this ASCII DAG diagram. The prior roles are above implied roles, with the arrows showing the direction of implication. The table below that also explicitly shows these relationships:
 
-![implied-role-dag](dag.png)
+![implied-role-dag](assets/dag.png)
 
 ---
 
