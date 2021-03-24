@@ -115,6 +115,10 @@ type ImpliedRolesSpec struct {
 
 ## 4. Example
 
+*What the operator does in updating the status* -
+
+*Adding newer role inferences* 
+
 Inferences: \
 admin -> developer\
 admin -> reviewer\
@@ -122,12 +126,19 @@ developer -> writer\
 writer -> pro\
 writer -> noob\
 
-
-*What the operator does in updating the status* -
-
 RuleInferences:\
 admin -> [ developer, reviewer, writer, pro, noob ]\
 developer -> [ writer, pro, noob ]\
 writer -> [ pro, noob ]\
- 
+
+
+*Deleting role inferences* 
+
+Infernece: 
+developer -> writer\
+
+RuleInferences:\
+admin -> [ developer, reviewer]\
+writer -> [ pro, noob ]\
+
 ---
