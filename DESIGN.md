@@ -1,8 +1,64 @@
 # Implied Role Assignment for Kubernetes
 
-## 1. Controller Design
+This is the design document for the implied roles operator.
 
-## _Reconciler function:_
+## Overview
+
+The operator is built as a combination of a **CRD** (Custom Resource Definition) and a **Controller** (written in Go). The design specifications of both components are outlined below.
+
+## CRD
+
+A **Custom Resource** (CR) contains a **Spec** and a **Status**. The **Spec** is effectively the schema for the desired state of implied roles in a cluster. The **Status** is a schema for the current state of implied roles in a cluster.
+
+Each _implication_ (parent role implied child role) is a CR in the cluster.
+
+### Spec
+
+The spec is defined below. An implied roles CR contains a one to one mapping of `ParentRole` to `ChildRole`.
+
+```golang
+type Rule struct {
+	   ParentRole   string      `json:"parent_role,omitempty"`
+	   ChildRole    string      `json:"child_role,omitempty"`
+}
+
+type ImpliedRolesSpec struct {	
+    InferenceRule   Rule        `json:"inference_rule,omitempty"`
+}
+```
+
+### Status
+
+The status is defined below. The `Inferences` contain a one-to-many mapping of `ParentRole` to multiple `ChildRoles`. The `ChildRoles` are all roles that a `ParentRole` would imply i.e. all roles that are descendants of `ParentRole` if one were to imagine all implies role rules as a tree. 
+
+```golang
+type RuleInferences struct {
+    ParentRole  string	        `json:"parent_role,omitempty"`
+    ChildRoles  []string	    `json:"child_roles,omitempty"`
+}
+
+type ImpliedRolesStatus struct {
+    Inferences  RuleInferences  `json:"inferences,omitempty"`
+}
+```
+
+### CR Sample
+
+This is an example of a implied roles CR defined in a `yaml`.
+
+```yaml
+kind: ImpliedRoles
+metadata:
+  name: impliedroles-sample
+spec:
+   inference_rule:
+	    parent_role: admin
+	    child_role: writer
+```
+
+## Controller
+
+### Reconciler function
 
 **Trigger:**
 
@@ -64,52 +120,6 @@
             if yes, \
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles from this role.\
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We un-assign these roles to the user via creating role bindings. (Also making sure we maintain labels for implied role)
-
----
-
-## 2. Spec and Status
-
-**================= SPEC =================**
-
-```
-type Rule struct {
-	   ParentRole	string	`json:"parent_role,omitempty"`
-	   ChildRole	string	`json:"child_role,omitempty"`
-}
-
-type ImpliedRolesSpec struct {	
-    // An object of the form prior_role => implied_role_1
-    InferenceRule Rule `json:"inference_rule,omitempty"`
-}
-```
-**========================================**
-
-**================= STATUS =================**
-
-    ```
-    type RuleInferences struct {
-	    ParentRole	string	`json:"parent_role,omitempty"`
-	    ChildRoles	[]string	`json:"child_roles,omitempty"`
-    }
-
-    type ImpliedRolesStatus struct {
-    Inferences RuleInferences `json:"inferences,omitempty"`
-    }
-    ```
-
-**==========================================**
-
----
-
-## 3. Custon resource definition
-
-**================= CRD =================**
-```
-    inference_rule:
-	    parent_role: admin
-	    child_role: writer
-```
-**=======================================**
 
 ---
 
