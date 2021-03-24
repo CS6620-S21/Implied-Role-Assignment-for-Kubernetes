@@ -64,7 +64,7 @@ spec:
 
 - Role-binding is created. &#8594; Role assignment (Through role binding yaml) \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kubectl apply (Only to current User)
-- Role-binding is updated. &#8594; Role assignment (Through role binding yaml) \ 
+- Role-binding is updated. &#8594; Role assignment (Through role binding yaml)\ 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kubectl apply (Only to current User)
 - Role un assignment using yaml, deleted role binding - Need to look how\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kubectl delete (Only to current User)
@@ -80,7 +80,7 @@ spec:
 **Logic:**
 
 - Role-binding is created &#8594;\
-        1. We get the user from the context and the role assigned. \ 
+        1. We get the user from the context and the role assigned. \
         2. We check if the role is an implied role.\
             if yes,\
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-   We go and retrieve all the implied roles for this role.\
