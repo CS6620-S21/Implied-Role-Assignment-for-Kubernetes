@@ -1,0 +1,7 @@
+apiVersion: role.neu.edu/v1
+kind: RoleImplicationRule
+metadata:
+  name: roleimplicationrule-sample
+spec:
+  # Add fields here
+  foo: bar

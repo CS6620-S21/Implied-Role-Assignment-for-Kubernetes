@@ -1,0 +1,8 @@
+domain: neu.edu
+layout: go.kubebuilder.io/v3
+plugins:
+  manifests.sdk.operatorframework.io/v2: {}
+  scorecard.sdk.operatorframework.io/v2: {}
+projectName: implied-roles
+repo: github.com/CS6620-S21/Implied-Role-Assignment-for-Kubernetes
+version: "3"
