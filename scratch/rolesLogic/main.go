@@ -180,6 +180,15 @@ func (q *Queue) PopBack() interface{} {
 var x = make(map[string][]string)
 var res = make(map[string][]string)
 
+func Find(slice []string, val string) (int, bool) {
+	for i, item := range slice {
+		if item == val {
+			return i, true
+		}
+	}
+	return -1, false
+}
+
 func transform(role string, irole string) {
 
 	x[role] = append(x[role], irole)
@@ -205,7 +214,14 @@ func transform(role string, irole string) {
 
 		for e := result.Front(); e != nil; e = e.Next() {
 			enew := fmt.Sprintf("%v", e.Value)
-			res[k] = append(res[k], enew)
+			fmt.Println(e.Value)
+
+			//res[k] = append(res[k], enew)
+
+			_, found := Find(res[k], enew)
+			if !found {
+				res[k] = append(res[k], enew)
+			}
 		}
 
 	}
