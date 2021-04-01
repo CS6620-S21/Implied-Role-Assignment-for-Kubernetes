@@ -178,40 +178,34 @@ func (q *Queue) PopBack() interface{} {
 }
 
 var x = make(map[string][]string)
+var res = make(map[string][]string)
 
 func transform(role string, irole string) {
 
-	//adding role and its irole
-	//if (){
-	//x[role] = append(x[role], irole)
-	//}
-
 	x[role] = append(x[role], irole)
-
-	// if x[irole] != nil {
-	// 	temp := x[irole]
-	// 	for j := 0; j < len(temp); j++ {
-	// 		x[role] = append(x[role], temp[j])
-	// 	}
-	// }
 
 	for k, v := range x {
 		fmt.Println("k:", k, "v:", v)
 		q := New()
 		q.PushBack(k)
-		res := list.New()
+		result := list.New()
 		for !q.empty() {
 			st := q.PopFront()
 			if st != k {
-				res.PushBack(st)
+				result.PushBack(st)
 			}
 			stnew := fmt.Sprintf("%v", st)
 			if x[stnew] != nil {
-				for _, s := range stnew {
+				for _, s := range x[stnew] {
 					//fmt.Println(i, s)
 					q.PushBack(s)
 				}
 			}
+		}
+
+		for e := result.Front(); e != nil; e = e.Next() {
+			enew := fmt.Sprintf("%v", e.Value)
+			res[k] = append(res[k], enew)
 		}
 
 	}
@@ -219,15 +213,13 @@ func transform(role string, irole string) {
 }
 
 func main() {
-	q := New()
-	q.PushFront("A")
-	q.PushFront("B")
-	fmt.Println("size of queue:", q.Len())
 
-	x["key"] = append(x["key"], "value")
-	x["key"] = append(x["key"], "value1")
+	transform("writer", "noob")
+	transform("admin", "developer")
+	transform("writer", "pro")
+	transform("developer", "writer")
+	transform("admin", "reviewer")
 
-	fmt.Println(x["key"][0])
-	fmt.Println(x["key"][1])
+	fmt.Println(res)
 
 }
