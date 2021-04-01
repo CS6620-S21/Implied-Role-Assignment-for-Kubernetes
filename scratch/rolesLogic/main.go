@@ -8,6 +8,12 @@ import (
 	"container/list"
 )
 
+// Temp Map to store and compare the initial roles and implications.
+var x = make(map[string][]string)
+
+// Final Map that holds all the roles an its implications.
+var res = make(map[string][]string)
+
 // Queue represents a double-ended queue.
 // The zero value is an empty queue ready to use.
 type Queue struct {
@@ -33,11 +39,6 @@ func (q *Queue) Init() *Queue {
 }
 
 // lazyInit lazily initializes a zero Queue value.
-//
-// I am mostly doing this because container/list does the same thing.
-// Personally I think it's a little wasteful because every single
-// PushFront/PushBack is going to pay the overhead of calling this.
-// But that's the price for making zero values useful immediately.
 func (q *Queue) lazyInit() {
 	if q.rep == nil {
 		q.Init()
@@ -94,8 +95,7 @@ func (q *Queue) lazyShrink() {
 	}
 }
 
-// String returns a string representation of queue q formatted
-// from front to back.
+// String returns a string representation of queue q formatted from front to back.
 func (q *Queue) String() string {
 	var result bytes.Buffer
 	result.WriteByte('[')
@@ -177,9 +177,7 @@ func (q *Queue) PopBack() interface{} {
 	return v
 }
 
-var x = make(map[string][]string)
-var res = make(map[string][]string)
-
+// checks if irole exists in a list of role that is assignd to the key
 func Find(slice []string, val string) (int, bool) {
 	for i, item := range slice {
 		if item == val {
@@ -189,38 +187,39 @@ func Find(slice []string, val string) (int, bool) {
 	return -1, false
 }
 
+// Creates the final Map for the reconciliation.
+// Need to pass the role and its implicated role.
 func transform(role string, irole string) {
 
+	// add roles if they dont exist or append irole to existing role.
 	x[role] = append(x[role], irole)
 
-	for k, v := range x {
-		fmt.Println("k:", k, "v:", v)
+	// iterate throught the temp MAP
+	for role, irole := range x {
+		fmt.Println("k:", role, "v:", irole)
 		q := New()
-		q.PushBack(k)
+		q.PushBack(role)
 		result := list.New()
 		for !q.empty() {
 			st := q.PopFront()
-			if st != k {
+			if st != role {
 				result.PushBack(st)
 			}
 			stnew := fmt.Sprintf("%v", st)
 			if x[stnew] != nil {
 				for _, s := range x[stnew] {
-					//fmt.Println(i, s)
 					q.PushBack(s)
 				}
 			}
 		}
 
+		// reiterate and appende  all the implied roles from Queue.
 		for e := result.Front(); e != nil; e = e.Next() {
 			enew := fmt.Sprintf("%v", e.Value)
 			fmt.Println(e.Value)
-
-			//res[k] = append(res[k], enew)
-
-			_, found := Find(res[k], enew)
+			_, found := Find(res[role], enew)
 			if !found {
-				res[k] = append(res[k], enew)
+				res[role] = append(res[role], enew)
 			}
 		}
 
@@ -228,8 +227,10 @@ func transform(role string, irole string) {
 
 }
 
+// passing example roles to test out the Map creation
 func main() {
 
+	// need to pass in the values extracted from context
 	transform("writer", "noob")
 	transform("admin", "developer")
 	transform("writer", "pro")
