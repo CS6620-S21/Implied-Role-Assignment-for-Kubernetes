@@ -4,6 +4,8 @@ import (
 	"bytes"
 
 	"fmt"
+
+	"container/list"
 )
 
 // Queue represents a double-ended queue.
@@ -178,17 +180,40 @@ func (q *Queue) PopBack() interface{} {
 var x = make(map[string][]string)
 
 func transform(role string, irole string) {
+
 	//adding role and its irole
 	//if (){
 	//x[role] = append(x[role], irole)
 	//}
+
 	x[role] = append(x[role], irole)
 
-	if x[irole] != nil {
-		temp := x[irole]
-		for j := 0; j < len(temp); j++ {
-			x[role] = append(x[role], temp[j])
+	// if x[irole] != nil {
+	// 	temp := x[irole]
+	// 	for j := 0; j < len(temp); j++ {
+	// 		x[role] = append(x[role], temp[j])
+	// 	}
+	// }
+
+	for k, v := range x {
+		fmt.Println("k:", k, "v:", v)
+		q := New()
+		q.PushBack(k)
+		res := list.New()
+		for !q.empty() {
+			st := q.PopFront()
+			if st != k {
+				res.PushBack(st)
+			}
+			stnew := fmt.Sprintf("%v", st)
+			if x[stnew] != nil {
+				for _, s := range stnew {
+					//fmt.Println(i, s)
+					q.PushBack(s)
+				}
+			}
 		}
+
 	}
 
 }
