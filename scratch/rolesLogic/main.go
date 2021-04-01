@@ -177,6 +177,22 @@ func (q *Queue) PopBack() interface{} {
 
 var x = make(map[string][]string)
 
+func transform(role string, irole string) {
+	//adding role and its irole
+	//if (){
+	//x[role] = append(x[role], irole)
+	//}
+	x[role] = append(x[role], irole)
+
+	if x[irole] != nil {
+		temp := x[irole]
+		for j := 0; j < len(temp); j++ {
+			x[role] = append(x[role], temp[j])
+		}
+	}
+
+}
+
 func main() {
 	q := New()
 	q.PushFront("A")
