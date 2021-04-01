@@ -175,9 +175,18 @@ func (q *Queue) PopBack() interface{} {
 	return v
 }
 
+var x = make(map[string][]string)
+
 func main() {
 	q := New()
 	q.PushFront("A")
 	q.PushFront("B")
 	fmt.Println("size of queue:", q.Len())
+
+	x["key"] = append(x["key"], "value")
+	x["key"] = append(x["key"], "value1")
+
+	fmt.Println(x["key"][0])
+	fmt.Println(x["key"][1])
+
 }
