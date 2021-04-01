@@ -65,16 +65,14 @@ func transform(role string, irole string) {
 
 }
 
-// passing example roles to test out the Map creation
-func main() {
+func (r *RoleImplicationRuleReconciler) GetAllRoleImplicationsForRoles(roleImplicationGraph map[string][]string) (map[string][]string, error) {
+	allRoleImplications := make(map[string][]string)
 
-	// need to pass in the values extracted from context
-	transform("writer", "noob")
-	transform("admin", "developer")
-	transform("developer", "writer")
-	transform("admin", "reviewer")
-	transform("writer", "pro")
-
-	fmt.Println(res)
-
+	for role, irole := range roleImplicationGraph {
+		for i := 0; i < len(irole); i++ {
+			transform(role, irole[i])
+		}
+	}
+	allRoleImplications = res
+	return allRoleImplications, nil
 }
