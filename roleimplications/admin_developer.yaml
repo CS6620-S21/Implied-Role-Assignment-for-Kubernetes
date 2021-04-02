@@ -1,0 +1,8 @@
+apiVersion: role.neu.edu/v1
+kind: RoleImplicationRule
+metadata:
+  name: admin-developer-rule
+spec:
+  implication_rule:
+    parent_role: admin
+    child_role: developer

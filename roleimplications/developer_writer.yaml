@@ -1,0 +1,8 @@
+apiVersion: role.neu.edu/v1
+kind: RoleImplicationRule
+metadata:
+  name: developer-writer-rule
+spec:
+  implication_rule:
+    parent_role: developer
+    child_role: writer
