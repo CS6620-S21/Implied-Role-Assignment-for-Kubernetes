@@ -1,0 +1,82 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: roleimplicationrules.role.neu.edu
+spec:
+  group: role.neu.edu
+  names:
+    kind: RoleImplicationRule
+    listKind: RoleImplicationRuleList
+    plural: roleimplicationrules
+    singular: roleimplicationrule
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: RoleImplicationRule is the Schema for the roleimplicationrules
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: RoleImplicationRuleSpec defines the desired state of RoleImplicationRule
+            properties:
+              implication_rule:
+                properties:
+                  child_role:
+                    type: string
+                  parent_role:
+                    description: 'TODO: make these fields required with kubebuilder'
+                    type: string
+                required:
+                - child_role
+                - parent_role
+                type: object
+            required:
+            - implication_rule
+            type: object
+          status:
+            description: RoleImplicationRuleStatus defines the observed state of RoleImplicationRule
+            properties:
+              role_implications:
+                properties:
+                  child_roles:
+                    items:
+                      type: string
+                    type: array
+                  parent_role:
+                    type: string
+                required:
+                - child_roles
+                - parent_role
+                type: object
+            required:
+            - role_implications
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

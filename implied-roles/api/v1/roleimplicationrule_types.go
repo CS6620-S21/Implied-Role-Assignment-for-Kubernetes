@@ -20,22 +20,25 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+type Rule struct {
+	// TODO: make these fields required with kubebuilder
+	ParentRole string `json:"parent_role"`
+	ChildRole  string `json:"child_role"`
+}
 
 // RoleImplicationRuleSpec defines the desired state of RoleImplicationRule
 type RoleImplicationRuleSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	ImplicationRule Rule `json:"implication_rule"`
+}
 
-	// Foo is an example field of RoleImplicationRule. Edit roleimplicationrule_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+type GeneratedImplications struct {
+	ParentRole string   `json:"parent_role"`
+	ChildRoles []string `json:"child_roles"`
 }
 
 // RoleImplicationRuleStatus defines the observed state of RoleImplicationRule
 type RoleImplicationRuleStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	RoleImplications GeneratedImplications `json:"role_implications"`
 }
 
 //+kubebuilder:object:root=true
