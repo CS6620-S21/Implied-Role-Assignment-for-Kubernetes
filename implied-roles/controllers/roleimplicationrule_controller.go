@@ -22,11 +22,13 @@ import (
 
 	"github.com/go-logr/logr"
 	rbacv1 "k8s.io/api/rbac/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	rolev1 "github.com/CS6620-S21/Implied-Role-Assignment-for-Kubernetes/api/v1"
+	ktypes "k8s.io/apimachinery/pkg/types"
 )
 
 // RoleImplicationRuleReconciler reconciles a RoleImplicationRule object
@@ -55,7 +57,7 @@ func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.
 	// Get role bindings.
 	// TODO: Switch this to use a pure function somehow.
 	roleBindings := rbacv1.RoleBindingList{}
-	if err := r.GetRoleBindings(ctx, &roleBindings); err != nil {
+	if err := r.GetRoleBindings(ctx, req, &roleBindings); err != nil {
 		return ctrl.Result{}, err
 	}
 
@@ -84,6 +86,10 @@ func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.
 		logger.Info(fmt.Sprintf("%s \t %v", parent, children))
 	}
 
+	if err := r.CreateRoleBindings(ctx); err != nil {
+		return ctrl.Result{}, err
+	}
+
 	return ctrl.Result{}, nil
 }
 
@@ -94,10 +100,14 @@ func (r *RoleImplicationRuleReconciler) SetupWithManager(mgr ctrl.Manager) error
 		Complete(r)
 }
 
-func (r *RoleImplicationRuleReconciler) GetRoleBindings(ctx context.Context, roleBindings *rbacv1.RoleBindingList) error {
+func (r *RoleImplicationRuleReconciler) GetRoleBindings(ctx context.Context, req ctrl.Request, roleBindings *rbacv1.RoleBindingList) error {
 	logger := r.Log
 
-	if err := r.List(ctx, roleBindings); err != nil {
+	opts := []client.ListOption{
+		client.InNamespace(req.NamespacedName.Namespace),
+	}
+
+	if err := r.List(ctx, roleBindings, opts...); err != nil {
 		logger.Error(err, "Error fetching role bindings")
 		return err
 	}
@@ -139,8 +149,53 @@ func (r *RoleImplicationRuleReconciler) GetRoleImplicationGraph(roleImplicationR
 func (r *RoleImplicationRuleReconciler) GetAllRoleImplicationsForRoles(roleImplicationGraph map[string][]string) (map[string][]string, error) {
 	allRoleImplications := make(map[string][]string)
 
-	// Your code goes here.
+	//TODO: Do a BFS of the graph and generate all role implications through the graph.
 
 	return allRoleImplications, nil
 }
 
+func (r *RoleImplicationRuleReconciler) CreateRoleBindings(ctx context.Context) error {
+	// TODO: Fix this to actually do stuff.
+	logger := r.Log
+
+	// Check if the rolebinding already exists. Don't create it if it already exists.
+	namespacedName := ktypes.NamespacedName{Namespace: "default", Name: "test-rolebinding"}
+	existingRoleBinding := &rbacv1.RoleBinding{}
+	if err := r.Get(ctx, namespacedName, existingRoleBinding); err == nil {
+		return nil
+	}
+
+	roleRef := rbacv1.RoleRef{
+		Name: "test-role-ref",
+		Kind: "Role",
+	}
+
+	testUser := rbacv1.Subject{
+		Kind: rbacv1.UserKind,
+		Name: "test-user",
+	}
+
+	subjects := make([]rbacv1.Subject, 0)
+	subjects = append(subjects, testUser)
+
+	metadata := v1.ObjectMeta{
+		Name: "test-rolebinding",
+		Labels: map[string]string{
+			"source": "implied-roles",
+		},
+		Namespace: "default",
+	}
+
+	roleBinding := rbacv1.RoleBinding{
+		ObjectMeta: metadata,
+		Subjects:   subjects,
+		RoleRef:    roleRef,
+	}
+
+	if err := r.Create(ctx, &roleBinding); err != nil {
+		logger.Error(err, "Failed test rolebinding creation")
+		return err
+	}
+
+	return nil
+}
