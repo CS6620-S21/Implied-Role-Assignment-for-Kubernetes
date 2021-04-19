@@ -64,7 +64,7 @@ func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	// Get user role mappings.
 	// TODO: Handle errors inside this.
-	_, err := r.GetUserRoleMappings(roleBindings)
+	_, err := GetUserRoleMappings(roleBindings)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -77,19 +77,22 @@ func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	// Get the graph from implication rules.
 	// TODO: Handle errors
-	roleImplicationGraph, err := r.GetRoleImplicationGraph(roleImplicationRules)
+	roleImplicationGraph, err := GetRoleImplicationGraph(roleImplicationRules)
 	if err != nil {
 		return ctrl.Result{}, err
-	}
-
-	// TODO: Get rid of this.
-	for parent, children := range roleImplicationGraph {
-		logger.Info(fmt.Sprintf("%s \t %v", parent, children))
 	}
 
 	if err := r.CreateRoleBindings(ctx); err != nil {
 		return ctrl.Result{}, err
 	}
+
+	allRoleImplications, err := GetAllRoleImplicationsForRoles(roleImplicationGraph)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// Get rid of this.
+	logger.Info(fmt.Sprintf("allRoleImplications => %v", allRoleImplications))
 
 	return ctrl.Result{}, nil
 }
@@ -98,6 +101,7 @@ func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.
 func (r *RoleImplicationRuleReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&rolev1.RoleImplicationRule{}).
+		Owns(&rbacv1.RoleBinding{}).
 		Complete(r)
 }
 
@@ -125,7 +129,7 @@ func (r *RoleImplicationRuleReconciler) GetRoleImplicationRules(ctx context.Cont
 	return nil
 }
 
-func (r *RoleImplicationRuleReconciler) GetUserRoleMappings(roleBindings rbacv1.RoleBindingList) (map[string][]string, error) {
+func GetUserRoleMappings(roleBindings rbacv1.RoleBindingList) (map[string][]string, error) {
 	userRoleMappings := make(map[string][]string)
 
 	for _, roleBinding := range roleBindings.Items {
@@ -137,7 +141,7 @@ func (r *RoleImplicationRuleReconciler) GetUserRoleMappings(roleBindings rbacv1.
 	return userRoleMappings, nil
 }
 
-func (r *RoleImplicationRuleReconciler) GetRoleImplicationGraph(roleImplicationRules rolev1.RoleImplicationRuleList) (map[string][]string, error) {
+func GetRoleImplicationGraph(roleImplicationRules rolev1.RoleImplicationRuleList) (map[string][]string, error) {
 	roleImplicationGraph := make(map[string][]string)
 
 	for _, implicationRule := range roleImplicationRules.Items {
@@ -147,8 +151,8 @@ func (r *RoleImplicationRuleReconciler) GetRoleImplicationGraph(roleImplicationR
 	return roleImplicationGraph, nil
 }
 
-// checks if irole exists in a list of role that is assignd to the key
 func Find(slice []string, val string) (int, bool) {
+	// checks if irole exists in a list of role that is assignd to the key
 	for i, item := range slice {
 		if item == val {
 			return i, true
@@ -157,16 +161,15 @@ func Find(slice []string, val string) (int, bool) {
 	return -1, false
 }
 
-// Creates the final Map for the reconciliation.
-// Need to pass the role and its implicated role.
 func transform(allRoleImplications map[string][]string, x map[string][]string, role string, irole string) (map[string][]string, map[string][]string) {
+	// Creates the final Map for the reconciliation.
+	// Need to pass the role and its implicated role.
 
 	// add roles if they dont exist or append irole to existing role.
 	x[role] = append(x[role], irole)
 
 	// iterate throught the temp MAP
-	for role, irole := range x {
-		fmt.Println("k:", role, "v:", irole)
+	for role := range x {
 		q := list.New()
 		q.PushBack(role)
 		result := list.New()
@@ -174,7 +177,6 @@ func transform(allRoleImplications map[string][]string, x map[string][]string, r
 			st := q.Front().Value
 			st_temp := q.Front()
 			q.Remove(st_temp)
-			fmt.Println(st)
 			if st != role {
 				result.PushBack(st)
 			}
@@ -189,20 +191,18 @@ func transform(allRoleImplications map[string][]string, x map[string][]string, r
 		// reiterate and appende  all the implied roles from Queue.
 		for e := result.Front(); e != nil; e = e.Next() {
 			enew := fmt.Sprintf("%v", e.Value)
-			fmt.Println(e.Value)
 			_, found := Find(allRoleImplications[role], enew)
 			if !found {
 				allRoleImplications[role] = append(allRoleImplications[role], enew)
 			}
 		}
-
 	}
 
 	return allRoleImplications, x
 
 }
 
-func (r *RoleImplicationRuleReconciler) GetAllRoleImplicationsForRoles(roleImplicationGraph map[string][]string) (map[string][]string, error) {
+func GetAllRoleImplicationsForRoles(roleImplicationGraph map[string][]string) (map[string][]string, error) {
 	allRoleImplications := make(map[string][]string)
 
 	var Implicationgraph = make(map[string][]string)
