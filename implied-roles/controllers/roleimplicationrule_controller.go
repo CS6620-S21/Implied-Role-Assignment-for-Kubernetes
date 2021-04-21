@@ -23,10 +23,13 @@ import (
 
 	"github.com/go-logr/logr"
 	rbacv1 "k8s.io/api/rbac/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	rolev1 "github.com/CS6620-S21/Implied-Role-Assignment-for-Kubernetes/api/v1"
 	ktypes "k8s.io/apimachinery/pkg/types"
@@ -55,6 +58,18 @@ type RoleImplicationRuleReconciler struct {
 func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := r.Log
 
+	if req.Namespace != "default" {
+		return ctrl.Result{}, nil
+	}
+
+	eventObject := rbacv1.RoleBinding{}
+
+	r.Get(ctx, req.NamespacedName, &eventObject)
+
+	if eventObject.Kind == "RoleBinding" && eventObject.GetLabels()["type"] == "implied" {
+		return ctrl.Result{}, nil
+	}
+
 	// Get and clear all implied role bindings.
 	if err := r.DeleteExistingImpliedRoleBindings(ctx); err != nil {
 		return ctrl.Result{}, err
@@ -69,7 +84,7 @@ func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	// Get user role mappings.
 	// TODO: Handle errors inside this.
-	_, err := GetUserRoleMappings(roleBindings)
+	userRoleMappings, err := GetUserRoleMappings(roleBindings)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -92,8 +107,11 @@ func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.
 		return ctrl.Result{}, err
 	}
 
-	// Get rid of this.
-	logger.Info(fmt.Sprintf("allRoleImplications => %v", allRoleImplications))
+	if err := r.CreateRoleBindingsForUsers(ctx, allRoleImplications, userRoleMappings); err != nil {
+		return ctrl.Result{}, err
+	}
+
+	logger.Info("Controller finished")
 
 	return ctrl.Result{}, nil
 }
@@ -103,6 +121,7 @@ func (r *RoleImplicationRuleReconciler) SetupWithManager(mgr ctrl.Manager) error
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&rolev1.RoleImplicationRule{}).
 		Owns(&rbacv1.RoleBinding{}).
+		Watches(&source.Kind{Type: &rbacv1.RoleBinding{}}, &handler.EnqueueRequestForObject{}).
 		Complete(r)
 }
 
@@ -296,5 +315,60 @@ func (r *RoleImplicationRuleReconciler) DeleteExistingImpliedRoleBindings(ctx co
 		}
 	}
 
+	return nil
+}
+
+func GetRoleBindingsForRoles(rolesToAdd map[string][]string, user string) []rbacv1.RoleBinding {
+	roleBindings := make([]rbacv1.RoleBinding, 0)
+
+	for key, element := range rolesToAdd {
+		for _, role := range element {
+			if len(role) > 0 {
+				subjects := []rbacv1.Subject{{Kind: "User", Name: user}}
+				roleRef := rbacv1.RoleRef{Kind: "Role", Name: role}
+
+				var roleBindingObject = rbacv1.RoleBinding{
+					ObjectMeta: v1.ObjectMeta{Name: fmt.Sprintf("%s-%s-%s", user, key, role), Namespace: "default", Labels: map[string]string{"type": "implied"}},
+					Subjects:   subjects,
+					RoleRef:    roleRef,
+				}
+
+				roleBindings = append(roleBindings, roleBindingObject)
+			}
+		}
+	}
+
+	return roleBindings
+}
+
+func (r *RoleImplicationRuleReconciler) CreateRoleBindingsForUsers(ctx context.Context, createRolesMap map[string][]string, getUserRolesMap map[string][]string) error {
+	logger := r.Log
+	for user, roles_list := range getUserRolesMap {
+		if len(roles_list) > 0 {
+			rolesToAdd := make(map[string][]string)
+			for _, role := range roles_list {
+				var toAdd []string
+				derivedRoles := createRolesMap[role]
+				toAdd = append(toAdd, derivedRoles...)
+				rolesToAdd[role] = toAdd
+			}
+
+			//Call to create role bindings
+			toCreateRoleBindings := GetRoleBindingsForRoles(rolesToAdd, user)
+
+			//Create role bindings
+			for _, rb := range toCreateRoleBindings {
+
+				if err := r.Create(ctx, &rb); err != nil {
+					if errors.IsNotFound(err) {
+						logger.Info("Error occured during creation")
+						return err
+					}
+				}
+
+				logger.Info("Role-Binding", rb.Name, "created successfully")
+			}
+		}
+	}
 	return nil
 }
