@@ -55,6 +55,11 @@ type RoleImplicationRuleReconciler struct {
 func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := r.Log
 
+	// Get and clear all implied role bindings.
+	if err := r.DeleteExistingImpliedRoleBindings(ctx); err != nil {
+		return ctrl.Result{}, err
+	}
+
 	// Get role bindings.
 	// TODO: Switch this to use a pure function somehow.
 	roleBindings := rbacv1.RoleBindingList{}
@@ -79,10 +84,6 @@ func (r *RoleImplicationRuleReconciler) Reconcile(ctx context.Context, req ctrl.
 	// TODO: Handle errors
 	roleImplicationGraph, err := GetRoleImplicationGraph(roleImplicationRules)
 	if err != nil {
-		return ctrl.Result{}, err
-	}
-
-	if err := r.CreateRoleBindings(ctx); err != nil {
 		return ctrl.Result{}, err
 	}
 
@@ -266,6 +267,33 @@ func (r *RoleImplicationRuleReconciler) CreateRoleBindings(ctx context.Context) 
 	if err := r.Create(ctx, &roleBinding); err != nil {
 		logger.Error(err, "Failed test rolebinding creation")
 		return err
+	}
+
+	return nil
+}
+
+func (r *RoleImplicationRuleReconciler) DeleteExistingImpliedRoleBindings(ctx context.Context) error {
+	/*
+		Get all role bindings create by this operator and delete them.
+	*/
+	logger := r.Log
+
+	opts := []client.ListOption{
+		client.MatchingLabels{"type": "implied"},
+	}
+
+	impliedRoleBindings := rbacv1.RoleBindingList{}
+
+	if err := r.List(ctx, &impliedRoleBindings, opts...); err != nil {
+		logger.Error(err, "Error fetching implied role bindings")
+		return err
+	}
+
+	// Delete all the roles we've got
+	for _, roleBinding := range impliedRoleBindings.Items {
+		if err := r.Delete(ctx, &roleBinding); err != nil {
+			logger.Error(err, fmt.Sprintf("Failed to delete RoleBinding %s", roleBinding.Name))
+		}
 	}
 
 	return nil
