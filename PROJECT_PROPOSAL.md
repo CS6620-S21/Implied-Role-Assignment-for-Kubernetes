@@ -27,7 +27,7 @@ As a result, the end users are expected to be users
 
 ## 3. Scope and Features of the Project:
 
-Users are assigned to roles within a namespace to perform operations. In order to better model the typical hierarchical authority model of a large organization, we will allow relationships between roles to be defined where one (larger more powerful role) can imply that the user also obtains a set of smaller (less powerful) roles.
+Users are assigned to roles within a namespace to perform operations. In order to better model the typical hierarchical authority model of a large organization, Users are assigned to roles within a namespace to perform operations. In order to better model the typical hierarchical authority model of a large organization, we will allow relationships between roles to be defined where one (larger more powerful role) can imply that the user also obtains a set of smaller (less powerful) roles.
 
 The roles can be viewed as a hierarchy:
 - Larger roles inherit the permissions assigned to smaller roles
@@ -36,22 +36,12 @@ For example, if a rule states that *admin* implies a *member*, any user assigned
 
 The implementation avoids a strict hierarchy in favor of generating a directed-acyclic-graph (DAG): the same role may be implied by multiple prior roles. At enforcement time the required abstraction is a set of role assignments, not a tree or a graph.
 
-An example set of implied roles: 
-- The *reader* role is for people that need to be able to inspect the values of resources in a namespace, but not make any changes to those resources. 
-- The *editor* role is for people that need to make standard changes, such as creating new virtual machines and allocating a floating IP address. All users with *editor* roles should have access to the resources specified by the *reader* role.
-
-Each of the services have their own admin roles defined. In addition, the two storage focused services have a joint role called *storage_admin* that implies both *object_admin* and *storage_admin*.
-
-If a user is assigned *all_admin* in a namespace and requests access for that namespace, the response will have all of the implied roles enumerated in it: *storage_admin*, *network_admin*, *image_admin*, *object_admin*, *editor*, and *reader*.
-
-- Any form of admin is implicitly an editor. 
-- A reader can view standard data from any of the systems, but cannot affect any change.
-- The editor role is superior to the reader; there would be no reason to assign someone the editor role without assigning the reader role as well. 
-- We often want to assign the reader role without the editor role for audit and monitoring.
-
 The role relationships are illustrated in this ASCII DAG diagram. The prior roles are above implied roles, with the arrows showing the direction of implication. The table below that also explicitly shows these relationships:
 
 ![implied-role-dag](assets/dag.png)
+
+For this project, we want to have the feature:
+- Assign user new roles by creating implication rules so that the hierarchy of roles shown in the above pircture is created by creating/applying new implication rules, instead of directly assigning new roles to the user.
 
 ---
 
