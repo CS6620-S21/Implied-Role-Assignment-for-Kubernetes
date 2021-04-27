@@ -158,6 +158,7 @@ spec:
 
 - We spent a lot of time trying to figure out our expectation for this project and the design of the operator. 
 - Some of us were unfamiliar to the technology, such as Kubernetes and Go Language. In the first half of the semester, we spent a lot of time going through tutorials about Operator and Go Language, and when we started our coding phase, we realized we didn't have enough to optimize our code and write tests.
+- It was hard to coordinate since all the work was done online. We ended up deviding different parts of code to different team members, and we spent some extra time to merge and reconcile all the code.
 
 ---
 
