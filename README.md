@@ -151,3 +151,8 @@ spec:
 - Able to automatically delete all implied role bindings after deleting the original role bindings of that user.
 - Able to automatically add back all implied role bindings after adding the origin role binding back.
 - Able to delete a specific implied role binding by deleting the corresponding implied rule, without affecting the original role binding for the user. 
+
+---
+
+## 8. Final Demo
+Here is the link of our final demo: https://drive.google.com/file/d/1cgoTSG3iLmP8NV8D1OvEailUgx3i_oTk/view?usp=sharing
