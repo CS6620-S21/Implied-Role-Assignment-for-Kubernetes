@@ -83,8 +83,8 @@ Discussions and decisions taken, why?
 
 ## 5. Acceptance Criteria
 
-- Users are assigned to roles within a namespace to perform operations. The role relationships should be implemented. 
-- Both explicitly assigned and implied roles will be included when roles assigned to a given user. If a user was explicitly assigned a role on a namespace, the validation of a token for that user and scoped to the namespace would have the roles. 
+- After creating/updating implied rules, user will be automatically assigned to implied roles according to the implied rules assigned. For example: if an user has developer role, and we create an implied rule that specifies that developer implies writer, and after applying this implied rule, now the user will also have writer role.
+- When an implication rule is deleted, the corresponding implied role binding will be automatically deleted, without affecting user's original role binding. For example: if an user has developer role and implied writer role from the implication rule that states that developer implies writer. When the implication rule is deleted, the user will not have writer role anymore, but still keeps the developer role. 
 ---
 
 ## 6.  Release Planning:
