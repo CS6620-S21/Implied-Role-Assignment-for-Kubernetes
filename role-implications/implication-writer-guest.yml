@@ -1,8 +1,8 @@
 apiVersion: role.neu.edu/v1
 kind: RoleImplicationRule
 metadata:
-  name: admin-developer-rule
+  name: writer-guest-rule
 spec:
   implication_rule:
-    parent_role: admin
-    child_role: developer
+    parent_role: writer
+    child_role: guest

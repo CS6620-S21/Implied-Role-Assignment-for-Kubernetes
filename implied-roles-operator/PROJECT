@@ -1,8 +1,0 @@
-domain: k8s.com
-layout: go.kubebuilder.io/v3
-projectName: implied-roles-operator
-repo: github.com/CS6620-S21/Implied-Role-Assignment-for-Kubernetes
-version: 3-alpha
-plugins:
-  manifests.sdk.operatorframework.io/v2: {}
-  scorecard.sdk.operatorframework.io/v2: {}

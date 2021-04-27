@@ -1,8 +1,0 @@
-apiVersion: role.neu.edu/v1
-kind: RoleImplicationRule
-metadata:
-  name: admin-pro-rule
-spec:
-  implication_rule:
-    parent_role: admin
-    child_role: pro
