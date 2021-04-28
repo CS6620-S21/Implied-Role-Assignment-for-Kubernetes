@@ -121,7 +121,7 @@ spec:
 
 - Role-binding is created. &#8594; Role assignment (Through role binding yaml) \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kubectl apply (Only to current User)
-- Role-binding is updated. &#8594; Role assignment (Through role binding yaml)\ 
+- Role-binding is updated. &#8594; Role assignment (Through role binding yaml) \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kubectl apply (Only to current User)
 - Role un assignment using yaml, deleted role binding - Need to look how\
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kubectl delete (Only to current User)
